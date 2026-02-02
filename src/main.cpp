@@ -1,12 +1,16 @@
 #include <Arduino.h>
 #include "rgb_lcd.h"
+#include <ESP32Encoder.h> // https://github.com/madhephaestus/ESP32Encoder.git 
+ 
+#define CLK 23 // CLK ENCODER 
+#define DT 19 // DT ENCODER
 
 rgb_lcd lcd;
 int pwm = 27;
 int frequence = 25000;
 int canal = 0;
 int resolution = 11;
-
+ESP32Encoder encoder;
 
 void setup() {
   // Initialise la liaison avec le terminal
@@ -24,19 +28,21 @@ void setup() {
   ledcSetup(canal, frequence, resolution);
   ledcAttachPin(pwm, canal);
   ledcWrite(canal, 0);
-
+  encoder.attachHalfQuad ( DT, CLK );
+  encoder.setCount ( 0 );
 
 }
 
 void loop() {
+
 int BP0=digitalRead(0);
 int BP1=digitalRead(2);
 int BP2=digitalRead(12);
 int Pot=analogRead(33);
-
-
-Serial.print("Pot=");
-Serial.println(Pot);
+//Serial.print("Pot=");
+//Serial.println(Pot);
+long newPosition = encoder.getCount() / 2;
+Serial.println(newPosition);
 
 if (BP0 == 0) { // bouton appuyé (car PULLUP)
    digitalWrite(26, HIGH); // active la sortie 
